@@ -1,21 +1,26 @@
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
+import { useRecoilState } from "recoil";
+import {
+  logicAfterLinkState,
+  playListState,
+  videoLinkState,
+  videoLinkStateSelector,
+} from "../components/atom";
 import TimeLineButton from "../components/TimeLineButton";
 import VideoContainer from "../components/VideoContainer";
 
 export default function Home() {
-  const autoPlay = "?autoplay=1";
   const continuousPlay = "&autoplay=1";
-  const [getLink, setGetLink] = useState("");
+  const [videoLink, setVideoLink] = useRecoilState(videoLinkState);
+  const [logicAfterLink, setLogicAfterLink] =
+    useRecoilState(logicAfterLinkState);
+  const [playList, setPlayList] = useRecoilState(playListState);
   const [currnetSong, setCurrentSong] = useState({});
   const inputLinkValue = useRef("");
   const inputPlayListValue = useRef("");
-  const [finalLink, setFinalLink] = useState("");
-  const [shufflePlay, setShufflePlay] = useState([]);
-  const [nowPlaying, setNowPlaying] = useState(false);
-  const [submitPlaylist, setSubmitPlayList] = useState(false);
 
-  const [playList, setPlayList] = useState([]);
+  const [nowPlaying, setNowPlaying] = useState(false);
 
   const testObj = [
     {
@@ -40,19 +45,17 @@ export default function Home() {
     },
   ];
 
-  // useEffect(() => {
-  //   setFinalLink(() => inputLinkValue.current.value + autoPlay);
-  // }, []);
+  useEffect(() => {
+    setLogicAfterLink(videoLink);
+  }, [videoLink]);
 
   function submitLink(e) {
     e.preventDefault();
-    console.log(inputLinkValue.current.value);
-    setGetLink(inputLinkValue.current.value);
-    console.log("getLink value :", getLink);
-    setFinalLink(() => inputLinkValue.current.value + autoPlay);
-    console.log("finalgetLink value :", finalLink);
-    console.log(finalLink);
-    // inputLinkValue.current.value = "";
+    setVideoLink(
+      `https://www.youtube.com/embed/${inputLinkValue.current.value}`
+    );
+
+    inputLinkValue.current.value = "";
   }
 
   function submitPlayList(e) {
@@ -66,11 +69,9 @@ export default function Home() {
     return new Promise((res) => setTimeout(res, ms * 1000));
   }
 
-  const testArray = ["0", "213", "448", "676", "933", "1166", "1340"];
-
   async function startPlay() {
     for (const currentValue of testObj) {
-      setFinalLink(
+      setLogicAfterLink(
         getLink + `?start=${currentValue.startPoint}` + continuousPlay
       );
       setCurrentSong(currentValue);
@@ -118,7 +119,7 @@ export default function Home() {
       <div className="w-full h-auto border border-red-500">
         <div className="flex justify-center w-full">
           <div>
-            <VideoContainer finalLink={finalLink} />
+            <VideoContainer finalLink={logicAfterLink} />
             <form className="flex flex-col">
               <input
                 ref={inputPlayListValue}
@@ -136,8 +137,8 @@ export default function Home() {
               {testObj.map(({ songName, startPoint }, index) => (
                 <TimeLineButton
                   onClick={() =>
-                    setFinalLink(
-                      getLink + `?start=${timeline}` + continuousPlay
+                    setLogicAfterLink(
+                      videoLink + `?start=${startPoint}` + continuousPlay
                     )
                   }
                   key={index}
