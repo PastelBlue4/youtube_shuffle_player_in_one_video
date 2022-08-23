@@ -1,8 +1,8 @@
 export default function VideoContainer({ finalLink }) {
   return (
     <iframe
-      width="560"
-      height="315"
+      width="660"
+      height="370"
       src={finalLink}
       title="YouTube video player"
       frameBorder="0"
