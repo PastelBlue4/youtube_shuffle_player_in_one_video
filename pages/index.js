@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useRef, useState } from "react";
+import TimeLineButton from "../components/TimeLineButton";
 import VideoContainer from "../components/VideoContainer";
 
 export default function Home() {
@@ -8,13 +9,36 @@ export default function Home() {
   const [getLink, setGetLink] = useState("");
   const inputLinkValue = useRef();
   const [finalLink, setFinalLink] = useState("");
+  const [shufflePlay, setShufflePlay] = useState([]);
+
   const submitLink = (e) => {
     e.preventDefault();
     setGetLink(inputLinkValue.current.value);
-    setFinalLink(getLink);
+    setFinalLink(getLink + autoPlay);
     inputLinkValue.current.value = "";
   };
-  console.log(getLink);
+
+  function playTime(ms) {
+    return new Promise((res) => setTimeout(res, ms));
+  }
+
+  const testArray = ["0", "213", "448", "676", "933", "1166", "1340"];
+
+  async function startPlay() {
+    for (const currentValue of testArray) {
+      setFinalLink(getLink + `?start=${currentValue}` + continuousPlay);
+      console.log(currentValue);
+      await playTime(10000);
+    }
+  }
+
+  //여기서 배열의 순서를 받아와서 실행한다.
+  //구간을 받아와야하네 >> 없으 수도 있음
+  // 그렇다면 쭉 진행 되는 노래 타임라인을 받아와서 index[1] - index[0] 를 빼면
+
+  // setTimeout(() => {
+  //   setFinalLink(getLink + `?start=${currentValue}` + continuousPlay);
+  // }, Number(3) * 1000);
 
   return (
     <>
@@ -26,7 +50,7 @@ export default function Home() {
       </div>
 
       <form>
-        <div className="w-full flex justify-center">
+        <div className="flex justify-center w-full">
           <input
             placeholder="  write your youtube link"
             ref={inputLinkValue}
@@ -34,48 +58,27 @@ export default function Home() {
           />
           <button
             onClick={submitLink}
-            className="bg-indigo-500 px-10 py-5  text-white  rounded-xl"
+            className="px-10 py-5 text-white bg-indigo-500 rounded-xl"
           >
             submit
           </button>
         </div>
       </form>
       <div className="w-full h-auto border border-red-500">
-        <div className="flex w-full justify-center">
+        <div className="flex justify-center w-full">
           <div>
             <VideoContainer finalLink={finalLink} />
-            <button
-              className="border bg-sky-300 text-yellow-50 px-6 py-3 rounded-lg mr-3"
-              onClick={() => {
-                setFinalLink(getLink + "?start=1" + continuousPlay);
-              }}
-            >
-              처음으로
-            </button>
-            <button
-              className="border bg-sky-300 text-yellow-50 px-6 py-3 rounded-lg mr-3"
-              onClick={() => {
-                setFinalLink(getLink + "?start=448" + continuousPlay);
-              }}
-            >
-              The Lazy Song
-            </button>
-            <button
-              className="border bg-sky-300 text-yellow-50 px-6 py-3 rounded-lg mr-3"
-              onClick={() => {
-                setFinalLink(getLink + "?start=675" + continuousPlay);
-              }}
-            >
-              I&aposm your
-            </button>
-            <button
-              className="border bg-sky-300 text-yellow-50 px-6 py-3 rounded-lg mr-3"
-              onClick={() => {
-                setFinalLink(getLink + "?start=2672" + continuousPlay);
-              }}
-            >
-              Still Into You
-            </button>
+
+            {testArray.map((timeline, index) => (
+              <TimeLineButton
+                onClick={() =>
+                  setFinalLink(getLink + `?start=${timeline}` + continuousPlay)
+                }
+                key={index}
+                timeLine={timeline}
+              />
+            ))}
+            <button onClick={startPlay}>Play Start!</button>
           </div>
         </div>
       </div>
