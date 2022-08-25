@@ -12,9 +12,11 @@ import VideoContainer from "../components/VideoContainer";
 
 export default function Home() {
   const continuousPlay = "&autoplay=1";
-  const [videoLink, setVideoLink] = useRecoilState(videoLinkState);
-  const [logicAfterLink, setLogicAfterLink] =
-    useRecoilState(logicAfterLinkState);
+
+  const [videoLink, setVideoLink] = useRecoilState(logicAfterLinkState);
+
+  const [videoFullLink, setVideoFullLink] = useState("");
+
   const [playList, setPlayList] = useRecoilState(playListState);
   const [currnetSong, setCurrentSong] = useState({});
   const inputLinkValue = useRef("");
@@ -45,18 +47,19 @@ export default function Home() {
     },
   ];
 
-  useEffect(() => {
-    setLogicAfterLink(videoLink);
-  }, [videoLink]);
-
   function submitLink(e) {
     e.preventDefault();
     setVideoLink(
       `https://www.youtube.com/embed/${inputLinkValue.current.value}`
     );
-
     inputLinkValue.current.value = "";
   }
+
+  useEffect(() => {
+    if (videoLink != "") {
+      setVideoFullLink(videoLink);
+    }
+  }, [videoLink]);
 
   function submitPlayList(e) {
     e.preventDefault();
@@ -64,6 +67,9 @@ export default function Home() {
     console.log(playList);
     inputPlayListValue.current.value = "";
   }
+  useEffect(() => {});
+
+  //입력을 받고 > 오브젝트 화 > 플레이리스트 > 실제 플레이리스트
 
   function playTime(ms) {
     return new Promise((res) => setTimeout(res, ms * 1000));
@@ -71,22 +77,14 @@ export default function Home() {
 
   async function startPlay() {
     for (const currentValue of testObj) {
-      setLogicAfterLink(
-        getLink + `?start=${currentValue.startPoint}` + continuousPlay
+      setVideoFullLink(
+        videoLink + `?start=${currentValue.startPoint}` + continuousPlay
       );
       setCurrentSong(currentValue);
       setNowPlaying(true);
       await playTime(currentValue.songLenght);
     }
   }
-
-  //여기서 배열의 순서를 받아와서 실행한다.
-  //구간을 받아와야하네 >> 없으 수도 있음
-  // 그렇다면 쭉 진행 되는 노래 타임라인을 받아와서 index[1] - index[0] 를 빼면
-
-  // setTimeout(() => {
-  //   setFinalLink(getLink + `?start=${currentValue}` + continuousPlay);
-  // }, Number(3) * 1000);
 
   return (
     <>
@@ -119,7 +117,7 @@ export default function Home() {
       <div className="w-full h-auto border border-red-500">
         <div className="flex justify-center w-full">
           <div>
-            <VideoContainer finalLink={logicAfterLink} />
+            <VideoContainer finalLink={videoFullLink} />
             <form className="flex flex-col">
               <input
                 ref={inputPlayListValue}
@@ -137,7 +135,7 @@ export default function Home() {
               {testObj.map(({ songName, startPoint }, index) => (
                 <TimeLineButton
                   onClick={() =>
-                    setLogicAfterLink(
+                    setVideoFullLink(
                       videoLink + `?start=${startPoint}` + continuousPlay
                     )
                   }
