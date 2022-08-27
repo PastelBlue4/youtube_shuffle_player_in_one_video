@@ -1,12 +1,7 @@
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
-import {
-  logicAfterLinkState,
-  playListState,
-  videoLinkState,
-  videoLinkStateSelector,
-} from "../components/atom";
+import { logicAfterLinkState, playListState } from "../components/atom";
 import TimeLineButton from "../components/TimeLineButton";
 import VideoContainer from "../components/VideoContainer";
 
@@ -17,7 +12,10 @@ export default function Home() {
 
   const [videoFullLink, setVideoFullLink] = useState("");
 
-  const [playList, setPlayList] = useRecoilState(playListState);
+  const [playList, setPlayList] = useState("");
+
+  const [playListObj, setPlayListObj] = useState("");
+
   const [currnetSong, setCurrentSong] = useState({});
   const inputLinkValue = useRef("");
   const inputPlayListValue = useRef("");
@@ -64,12 +62,33 @@ export default function Home() {
   function submitPlayList(e) {
     e.preventDefault();
     setPlayList(inputPlayListValue.current.value);
-    console.log(playList);
     inputPlayListValue.current.value = "";
   }
-  useEffect(() => {});
+
+  useEffect(() => {
+    if (playList != "") {
+      const dividePlayListOrder = playList.split(/[,]/);
+      console.log(dividePlayListOrder);
+      console.log(dividePlayListOrder[0]);
+
+      const dividePlayListValue = dividePlayListOrder[0].split(/[-]/);
+      console.log(dividePlayListValue);
+
+      function PlayListLogic(songName, startPoint, songLenght) {
+        this.songName = songName;
+        this.startPoint = startPoint;
+        this.songLenght = songLenght;
+      }
+    }
+  }, [playList]);
+
+  const nowPlayList = () => {
+    console.log(playListObj);
+  };
 
   //입력을 받고 > 오브젝트 화 > 플레이리스트 > 실제 플레이리스트
+
+  // ㅌ
 
   function playTime(ms) {
     return new Promise((res) => setTimeout(res, ms * 1000));
@@ -119,7 +138,7 @@ export default function Home() {
           <div>
             <VideoContainer finalLink={videoFullLink} />
             <form className="flex flex-col">
-              <input
+              <textarea
                 ref={inputPlayListValue}
                 placeholder="Share to me your playlist :)"
                 className="w-[660px] h-[360px] border border-indigo-300 mt-6"
@@ -156,6 +175,7 @@ export default function Home() {
                 <span> now playing : {currnetSong.songName} </span>
               ) : null}
             </div>
+            <button onClick={nowPlayList}>testbtn</button>
           </div>
         </div>
       </div>

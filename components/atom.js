@@ -11,7 +11,7 @@ export const logicAfterLinkState = atom({
 });
 
 export const playListState = atom({
-  key: "playListState",
+  key: "playListStateKey",
   default: "",
 });
 
