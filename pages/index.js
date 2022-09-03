@@ -67,17 +67,19 @@ export default function Home() {
 
   useEffect(() => {
     if (playList != "") {
+      console.log(`처음 입력값, ${playList}`);
+
       const dividePlayListOrder = playList.split(/[,]/);
-      console.log(dividePlayListOrder);
-      console.log(dividePlayListOrder[0]);
+      console.log(`쉼표로 분리 ${dividePlayListOrder}`);
 
-      const dividePlayListValue = dividePlayListOrder[0].split(/[-]/);
-      console.log(dividePlayListValue);
+      dividePlayListOrder.forEach((value) => {
+        let logicresult = value.split(/[-]/);
+        console.log(logicresult);
+      });
 
-      function PlayListLogic(songName, startPoint, songLenght) {
+      function playListLogic(songName, startPoint) {
         this.songName = songName;
         this.startPoint = startPoint;
-        this.songLenght = songLenght;
       }
     }
   }, [playList]);
@@ -87,8 +89,6 @@ export default function Home() {
   };
 
   //입력을 받고 > 오브젝트 화 > 플레이리스트 > 실제 플레이리스트
-
-  // ㅌ
 
   function playTime(ms) {
     return new Promise((res) => setTimeout(res, ms * 1000));
